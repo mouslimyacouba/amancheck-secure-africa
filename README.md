@@ -1,59 +1,20 @@
-# Enhanced Vite React TypeScript Template
+# AmanCheck Secure (Android)
 
-This template includes built-in detection for missing CSS variables between your Tailwind config and CSS files.
+AmanCheck is a native Android security application designed to detect, verify, and combat financial scams and mobile money fraud in Niger and West Africa (Orange Money, Moov Money, Airtel, Wave, etc.).
 
-## Features
+## Key Features
 
-- **CSS Variable Detection**: Automatically detects if CSS variables referenced in `tailwind.config.cjs` are defined in `src/index.css`
-- **Enhanced Linting**: Includes ESLint, Stylelint, and custom CSS variable validation
-- **Shadcn/ui**: Pre-configured with all Shadcn components
-- **Modern Stack**: Vite + React + TypeScript + Tailwind CSS
+- **Verification Engine**: Real-time verification of suspicious phone numbers, URLs, and mobile applications with community and algorithmic fraud scoring.
+- **AI Security Analyzer**: Screenshot and text analyzer detecting phishing attempts, artificial urgency, OTP theft, and financial impersonation.
+- **Community Scam Reporting**: Community-driven reporting of phone numbers, links, and fake apps with photo proof support.
+- **Live Alert Feed**: Real-time alerts on active fraud campaigns in West Africa.
+- **Bilingual Support**: Full native language switching between French (*Français*) and Hausa (*Hausa*).
+- **Security Education Guides**: Practical guides and daily security tips to avoid scams.
+- **Local Persistence**: Built with Room database, pre-seeded with regional threat intelligence.
 
-## Available Scripts
+## Technical Architecture
 
-```bash
-# Run all linting (includes CSS variable check)
-npm run lint
-
-# Check only CSS variables
-npm run check:css-vars
-
-# Individual linting
-npm run lint:js    # ESLint
-npm run lint:css   # Stylelint
-```
-
-## CSS Variable Detection
-
-The template includes a custom script that:
-
-1. **Parses `tailwind.config.cjs`** to find all `var(--variable)` references
-2. **Parses `src/index.css`** to find all defined CSS variables (`--variable:`)
-3. **Cross-references** them to find missing definitions
-4. **Reports undefined variables** with clear error messages
-
-### Example Output
-
-When CSS variables are missing:
-```
-❌ Undefined CSS variables found in tailwind.config.cjs:
-   --sidebar-background
-   --sidebar-foreground
-   --sidebar-primary
-
-Add these variables to src/index.css
-```
-
-When all variables are defined:
-```
-✅ All CSS variables in tailwind.config.cjs are defined
-```
-
-## How It Works
-
-The detection happens during the `npm run lint` command, which will:
-- Exit with error code 1 if undefined variables are found
-- Show exactly which variables need to be added to your CSS file
-- Integrate seamlessly with your development workflow
-
-This prevents runtime CSS issues where Tailwind classes reference undefined CSS variables.
+- **Platform**: Android (Kotlin, Jetpack Compose, Material 3)
+- **Database**: AndroidX Room with Kotlin Symbol Processing (KSP)
+- **Networking & AI**: Gemini API integration with local heuristic security engine fallback
+- **Images**: Coil Compose & Android PhotoPicker API

@@ -1,0 +1,6 @@
+{
+  "name": "AmanCheck",
+  "description": "Financial scam detection and verification app for Francophone and Hausa speaking communities in Africa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
