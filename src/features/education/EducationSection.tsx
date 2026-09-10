@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { blink } from '@/blink/client';
+import type { EducationContentRow } from '@/lib/db-types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
   BookOpen, 
@@ -10,14 +11,7 @@ import {
 } from 'lucide-react';
 import { Card, Button, Badge, Skeleton } from '@blinkdotnew/ui';
 
-interface Content {
-  id: string;
-  title_fr: string;
-  title_ha: string;
-  excerpt_fr: string;
-  excerpt_ha: string;
-  category: string;
-}
+type Content = EducationContentRow;
 
 export function EducationSection() {
   const { lang, t } = useLanguage();
@@ -27,8 +21,9 @@ export function EducationSection() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const { data } = await blink.db.education_content.list();
-        setContent(data as any);
+        const contentTable = blink.db.table<EducationContentRow>('education_content');
+        const data = await contentTable.list();
+        setContent(data);
       } catch (error) {
         console.error('Failed to fetch education content', error);
       } finally {
@@ -58,9 +53,9 @@ export function EducationSection() {
             <div className="p-6 space-y-4 flex-1 flex flex-col">
               <div className="space-y-2 flex-1">
                 <Badge variant="secondary" className="bg-primary/10 text-primary">{item.category}</Badge>
-                <h3 className="text-xl font-bold">{lang === 'fr' ? item.title_fr : item.title_ha}</h3>
+                <h3 className="text-xl font-bold">{lang === 'fr' ? item.titleFr : item.titleHa}</h3>
                 <p className="text-muted-foreground line-clamp-2">
-                  {lang === 'fr' ? item.excerpt_fr : item.excerpt_ha}
+                  {lang === 'fr' ? item.excerptFr : item.excerptHa}
                 </p>
               </div>
               <Button variant="ghost" className="w-full justify-between group-hover:bg-primary/10">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { blink } from '@/blink/client';
+import type { VerifiedItemsRow } from '@/lib/db-types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
   ShieldCheck, 
@@ -12,14 +13,10 @@ import {
 } from 'lucide-react';
 import { Card, Badge, Button, LoadingOverlay } from '@blinkdotnew/ui';
 
-interface VerificationResult {
-  id: string;
-  type: 'phone' | 'url' | 'app';
-  value: string;
-  risk_level: 'low' | 'high' | 'suspicious';
-  source: string;
-  created_at: string;
-}
+type VerificationResult = VerifiedItemsRow & {
+  type: 'phone' | 'url' | 'app' | null;
+  riskLevel: 'low' | 'high' | 'suspicious' | null;
+};
 
 export function VerificationEngine() {
   const { t } = useLanguage();
@@ -38,12 +35,13 @@ export function VerificationEngine() {
 
     try {
       // 1. Check database for known reports
-      const { data } = await blink.db.verified_items.list({
+      const verifiedItems = blink.db.table<VerifiedItemsRow>('verified_items');
+      const data = await verifiedItems.list({
         where: { value: query.trim() }
       });
 
-      if (data && data.length > 0) {
-        setResult(data[0] as any);
+      if (data.length > 0) {
+        setResult(data[0] as VerificationResult);
       } else {
         // 2. If not found, use AI for risk assessment
         const prompt = `Analyse la fiabilité de cet élément au Niger/Afrique de l'Ouest : "${query}". 
@@ -95,17 +93,17 @@ export function VerificationEngine() {
           <h2 className="text-xl font-bold px-1">{t.search_results}</h2>
           
           {result ? (
-            <Card className={`p-6 border-l-8 ${result.risk_level === 'high' ? 'border-l-destructive' : 'border-l-yellow-500'}`}>
+            <Card className={`p-6 border-l-8 ${result.riskLevel === 'high' ? 'border-l-destructive' : 'border-l-yellow-500'}`}>
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    {result.risk_level === 'high' ? (
+                    {result.riskLevel === 'high' ? (
                       <ShieldAlert className="text-destructive" size={24} />
                     ) : (
                       <AlertTriangle className="text-yellow-500" size={24} />
                     )}
                     <h3 className="text-2xl font-bold">
-                      {result.risk_level === 'high' ? t.fraud_detected : t.suspicious}
+                      {result.riskLevel === 'high' ? t.fraud_detected : t.suspicious}
                     </h3>
                   </div>
                   <p className="text-lg font-mono bg-secondary/50 px-3 py-1 rounded inline-block">
@@ -115,8 +113,8 @@ export function VerificationEngine() {
                     Source: <span className="font-semibold text-foreground">{result.source}</span>
                   </p>
                 </div>
-                <Badge variant={result.risk_level === 'high' ? 'destructive' : 'secondary'} className="text-lg py-1 px-4">
-                  {result.risk_level.toUpperCase()}
+                <Badge variant={result.riskLevel === 'high' ? 'destructive' : 'secondary'} className="text-lg py-1 px-4">
+                  {(result.riskLevel ?? 'unknown').toUpperCase()}
                 </Badge>
               </div>
             </Card>

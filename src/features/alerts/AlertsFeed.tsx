@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { blink } from '@/blink/client';
+import type { AlertsRow } from '@/lib/db-types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
   Bell, 
@@ -10,15 +11,7 @@ import {
 } from 'lucide-react';
 import { Card, Badge, Skeleton } from '@blinkdotnew/ui';
 
-interface Alert {
-  id: string;
-  title_fr: string;
-  title_ha: string;
-  content_fr: string;
-  content_ha: string;
-  type: string;
-  created_at: string;
-}
+type Alert = AlertsRow;
 
 export function AlertsFeed() {
   const { lang, t } = useLanguage();
@@ -28,10 +21,11 @@ export function AlertsFeed() {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const { data } = await blink.db.alerts.list({
-          orderBy: { created_at: 'desc' }
+        const alertsTable = blink.db.table<AlertsRow>('alerts');
+        const data = await alertsTable.list({
+          orderBy: { createdAt: 'desc' }
         });
-        setAlerts(data as any);
+        setAlerts(data);
       } catch (error) {
         console.error('Failed to fetch alerts', error);
       } finally {
@@ -64,13 +58,13 @@ export function AlertsFeed() {
                 </div>
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold">{lang === 'fr' ? alert.title_fr : alert.title_ha}</h3>
+                    <h3 className="text-lg font-bold">{lang === 'fr' ? alert.titleFr : alert.titleHa}</h3>
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock size={12} /> {new Date(alert.created_at).toLocaleDateString()}
+                      <Clock size={12} /> {alert.createdAt ? new Date(alert.createdAt).toLocaleDateString() : ''}
                     </span>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    {lang === 'fr' ? alert.content_fr : alert.content_ha}
+                    {lang === 'fr' ? alert.contentFr : alert.contentHa}
                   </p>
                 </div>
               </div>

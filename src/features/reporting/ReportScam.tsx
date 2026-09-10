@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { blink } from '@/blink/client';
+import type { ReportsRow } from '@/lib/db-types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
   AlertTriangle, 
@@ -37,11 +38,12 @@ export function ReportScam() {
         proofUrl = publicUrl;
       }
 
-      await blink.db.reports.create({
+      const reportsTable = blink.db.table<ReportsRow>('reports');
+      await reportsTable.create({
         type: formData.type,
         target: formData.target,
         description: formData.description,
-        proof_url: proofUrl,
+        proofUrl,
         status: 'pending'
       });
 
